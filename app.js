@@ -1,6 +1,12 @@
 /* =========================================================
-   ZIKIR MATIK - MAIN APPLICATION SCRIPT
-   All comments are intentionally written in ENGLISH
+   ZIKIR MATIK - app.js (FULL)
+   - Comments are in English by request
+   - Free counter pinned on the left
+   - Other counters on the right
+   - Select opens the counter immediately (no "Devam Et")
+   - Add/Edit/Delete modal included
+   - localStorage persistence + daily reset
+   - PWA service worker register
 ========================================================= */
 
 /* =========================
@@ -13,10 +19,10 @@ if ("serviceWorker" in navigator) {
 }
 
 /* =========================
-   Helpers
+   Utility helpers
 ========================= */
 
-// Returns YYYY-MM-DD (local day)
+// Returns YYYY-MM-DD for local date
 function todayStamp() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -31,14 +37,14 @@ function uuid() {
     : Date.now() + "-" + Math.random().toString(16).slice(2);
 }
 
-// Safe integer
+// Force positive integer
 function clampInt(val, def = 1) {
   const n = Number(val);
   if (!Number.isFinite(n) || n <= 0) return def;
   return Math.floor(n);
 }
 
-// Escape HTML to prevent layout breaking
+// Escape HTML for safe rendering inside innerHTML
 function escapeHtml(str) {
   return String(str || "")
     .replaceAll("&", "&amp;")
@@ -52,12 +58,13 @@ function escapeHtml(str) {
 /* =========================
    Storage
 ========================= */
-
-const STORAGE_KEY = "zikir-matik-state-v2";
+const STORAGE_KEY = "zikir-matik-state-v3";
 
 function loadState() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
   } catch {
     return null;
   }
@@ -68,9 +75,8 @@ function saveState() {
 }
 
 /* =========================
-   Default dhikr data
+   Default items
 ========================= */
-
 const DEFAULT_DHIKRS = [
   {
     id: "free-counter",
@@ -80,7 +86,7 @@ const DEFAULT_DHIKRS = [
     step: 1,
     today: 0,
     total: 0,
-    description: "Target-free counter. Count as much as you want."
+    description: "Hedefsiz sayaç. İstediğin kadar say."
   },
   {
     id: "ya-latif",
@@ -91,7 +97,7 @@ const DEFAULT_DHIKRS = [
     today: 0,
     total: 0,
     description:
-      "Ya Latif (c.c.) dhikr is commonly associated with ease, abundance, relief from hardship and inner peace."
+      'Ya Latif" (c.c.) zikrini okuyanlar, genellikle rızık bolluğu, zor işlerin kolaylaşması, sıkıntıların feraha çıkması ve manevi huzur gibi lütuf ve ikramların tecelli ettiğini belirtmektedir.'
   },
   {
     id: "ya-safi",
@@ -101,8 +107,7 @@ const DEFAULT_DHIKRS = [
     step: 1,
     today: 0,
     total: 0,
-    description:
-      "Recited for healing, both physical and spiritual."
+    description: "Şifa, hastalıkların hafiflemesi ve manevi/bedeni iyilik için okunur."
   },
   {
     id: "euzu-kelimat",
@@ -113,66 +118,86 @@ const DEFAULT_DHIKRS = [
     today: 0,
     total: 0,
     description:
-`🕌 Arabic:
+`🕌 Arapça:
 أَعُوذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ
 
-🔤 Pronunciation:
+🔤 Okunuş:
 Eûzü bi-kelimâtillâhi’t-tâmmâti min kulli şeytânin ve hâmmetin ve min kulli aynin lâmmeth.
 
-ℹ️ Explanation:
-A powerful supplication for protection against evil eye and harm.`
+ℹ️ Açıklama:
+Nazar, şeytan ve her türlü zararlı etkiden korunmak için okunan güçlü bir duadır.`
   },
   {
     id: "in-yekadu",
-    name: "İn Yekâdû (Qalam 51–52)",
+    name: "İn Yekâdû (Kalem 51–52)",
     hasTarget: true,
     target: 3,
     step: 1,
     today: 0,
     total: 0,
     description:
-`🕌 Arabic:
+`🕌 Arapça:
 وَإِنْ يَكَادُ الَّذِينَ كَفَرُوا لَيُزْلِقُونَكَ بِأَبْصَارِهِمْ لَمَّا سَمِعُوا الذِّكْرَ وَيَقُولُونَ إِنَّهُ لَمَجْنُونٌ
 وَمَا هُوَ إِلَّا ذِكْرٌ لِلْعَالَمِينَ
 
-🔤 Pronunciation:
+🔤 Okunuş:
 Ve in yekēdullezîne keferû le yuzlikûneke bi-ebsârihim lemmâ semîʿûz-zikra ve yekûlûne innehû le mecnûn.
 Ve mâ huve illâ zikrun lil-ʿâlemîn.
 
-ℹ️ Explanation:
-Verses commonly recited for protection from the evil eye.`
+ℹ️ Açıklama:
+Kalem Suresi 51–52. Nazar, haset ve kötü bakışlara karşı korunmak amacıyla okunur.`
   }
 ];
 
 /* =========================
    Initialize state
 ========================= */
+let state =
+  loadState() ||
+  {
+    date: todayStamp(),
+    activeId: "free-counter",
+    dhikrs: DEFAULT_DHIKRS
+  };
 
-let state = loadState() || {
-  date: todayStamp(),
-  activeId: "free-counter",
-  dhikrs: DEFAULT_DHIKRS
-};
-
-// Reset daily counters if date changed
+// Daily reset if date changed
 if (state.date !== todayStamp()) {
-  state.dhikrs.forEach(d => (d.today = 0));
+  state.dhikrs.forEach((d) => (d.today = 0));
   state.date = todayStamp();
   saveState();
 }
 
+// Ensure there is always a free counter
+function ensureFreeCounter() {
+  let free = state.dhikrs.find((d) => d.hasTarget === false);
+  if (!free) {
+    free = {
+      id: uuid(),
+      name: "Serbest Sayaç",
+      hasTarget: false,
+      target: null,
+      step: 1,
+      today: 0,
+      total: 0,
+      description: "Hedefsiz sayaç. İstediğin kadar say."
+    };
+    state.dhikrs.unshift(free);
+    if (!state.activeId) state.activeId = free.id;
+    saveState();
+  }
+}
+ensureFreeCounter();
+
 /* =========================
    DOM references
 ========================= */
+const menuView = document.getElementById("menuView");
+const counterView = document.getElementById("counterView");
 
 const freeSlot = document.getElementById("freeSlot");
 const dhikrList = document.getElementById("dhikrList");
 
-const goCounterBtn = document.getElementById("goCounterBtn");
 const backBtn = document.getElementById("backBtn");
-
-const menuView = document.getElementById("menuView");
-const counterView = document.getElementById("counterView");
 
 const activeNameEl = document.getElementById("activeName");
 const activeSubEl = document.getElementById("activeSub");
@@ -187,14 +212,28 @@ const tapBtn = document.getElementById("tapBtn");
 const undoBtn = document.getElementById("undoBtn");
 const resetBtn = document.getElementById("resetBtn");
 
+const openAddBtn = document.getElementById("openAddBtn");
+
+// Modal DOM
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const saveBtn = document.getElementById("saveBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const dangerZone = document.getElementById("dangerZone");
+
+const nameInput = document.getElementById("nameInput");
+const descInput = document.getElementById("descInput");
+const stepInput = document.getElementById("stepInput");
+const targetInput = document.getElementById("targetInput");
+const noTargetInput = document.getElementById("noTargetInput");
+
+let editingId = null;
+
 /* =========================
-   Core helpers
+   View navigation
 ========================= */
-
-function getActive() {
-  return state.dhikrs.find(d => d.id === state.activeId);
-}
-
 function switchView(view) {
   if (view === "menu") {
     menuView.classList.remove("hidden");
@@ -205,25 +244,18 @@ function switchView(view) {
   }
 }
 
-/* =========================
-   Render menu (LEFT: free, RIGHT: others)
-========================= */
-
-function renderMenu() {
-  freeSlot.innerHTML = "";
-  dhikrList.innerHTML = "";
-
-  const free = state.dhikrs.find(d => !d.hasTarget);
-  if (free) freeSlot.appendChild(buildCard(free, true));
-
-  state.dhikrs
-    .filter(d => d.hasTarget)
-    .forEach(d => dhikrList.appendChild(buildCard(d, false)));
+function getActive() {
+  return state.dhikrs.find((d) => d.id === state.activeId) || state.dhikrs[0];
 }
 
 /* =========================
-   Build a dhikr card
+   Rendering
 ========================= */
+
+// Formats description for preview; keeps it simple (safe)
+function formatPreview(text) {
+  return escapeHtml((text || "").trim());
+}
 
 function buildCard(d, pinned) {
   const card = document.createElement("div");
@@ -232,126 +264,335 @@ function buildCard(d, pinned) {
     (pinned ? " freePinned" : "") +
     (d.id === state.activeId ? " selected" : "");
 
+  const badgeSelected = d.id === state.activeId ? `<span class="badge sel">Active</span>` : "";
+  const badgeFree = !d.hasTarget ? `<span class="badge free">Free ∞</span>` : "";
+  const badgeTarget = d.hasTarget ? `<span class="badge">Target: ${d.target}</span>` : "";
+
   card.innerHTML = `
     <div class="cardTop">
       <div>
         <p class="title">${escapeHtml(d.name)}</p>
         <div class="meta">
-          <span>Today: <b>${d.today}</b>${d.hasTarget ? ` / ${d.target}` : " / ∞"}</span>
+          <span>Today: <b>${d.today}</b>${d.hasTarget ? ` / <b>${d.target}</b>` : ` / <b>∞</b>`}</span>
           <span>Total: <b>${d.total}</b></span>
+          <span>Step: <b>${d.step || 1}</b></span>
         </div>
       </div>
       <div class="badges">
-        ${d.id === state.activeId ? `<span class="badge sel">Active</span>` : ""}
-        ${!d.hasTarget ? `<span class="badge free">Free</span>` : ""}
+        ${badgeSelected}
+        ${badgeFree}
+        ${badgeTarget}
       </div>
     </div>
 
-    <div class="descPreview">${escapeHtml(d.description)}</div>
+    <div class="descPreview">${formatPreview(d.description)}</div>
 
     <div class="cardBtns">
-      <button data-action="select">Select</button>
-      <button data-action="edit">Edit</button>
-      <button data-action="delete">Delete</button>
+      <button data-action="select" data-id="${d.id}">Select</button>
+      <button data-action="edit" data-id="${d.id}">Edit</button>
+      <button data-action="delete" data-id="${d.id}">Delete</button>
     </div>
   `;
 
-  card.querySelectorAll("button").forEach(btn => {
-    btn.onclick = () => {
-      const action = btn.dataset.action;
+  // Attach events
+  card.querySelectorAll("button[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      const action = btn.getAttribute("data-action");
+
       if (action === "select") {
-        state.activeId = d.id;
+        // Select and open counter immediately
+        state.activeId = id;
         saveState();
         renderMenu();
+        renderCounter();
+        switchView("counter");
       }
-      if (action === "delete") {
-        if (confirm(`Delete "${d.name}"?`)) {
-          state.dhikrs = state.dhikrs.filter(x => x.id !== d.id);
-          if (state.activeId === d.id) state.activeId = "free-counter";
-          saveState();
-          renderMenu();
-        }
-      }
+
       if (action === "edit") {
-        alert("Edit modal already implemented earlier (unchanged).");
+        openEdit(id);
       }
-    };
+
+      if (action === "delete") {
+        deleteDhikr(id);
+      }
+    });
   });
 
   return card;
 }
 
-/* =========================
-   Counter rendering
-========================= */
+function renderMenu() {
+  ensureFreeCounter();
+
+  freeSlot.innerHTML = "";
+  dhikrList.innerHTML = "";
+
+  // Free counter goes to the left column
+  const free = state.dhikrs.find((d) => d.hasTarget === false);
+  if (free) freeSlot.appendChild(buildCard(free, true));
+
+  // All target-based dhikrs go to the right column
+  state.dhikrs
+    .filter((d) => d.hasTarget === true)
+    .forEach((d) => dhikrList.appendChild(buildCard(d, false)));
+}
 
 function renderCounter() {
   const d = getActive();
-  if (!d) return;
 
   activeNameEl.textContent = d.name;
-  activeSubEl.textContent = d.hasTarget ? `Target: ${d.target}` : "Free counter";
+  activeSubEl.textContent = d.hasTarget ? `Target: ${d.target} | Step: ${d.step || 1}` : `Free counter | Step: ${d.step || 1}`;
 
   countEl.textContent = d.today;
   todayLabelEl.textContent = d.today;
   totalLabelEl.textContent = d.total;
 
-  targetTitleEl.textContent = d.hasTarget ? "Target" : "Mode";
-  targetLabelEl.textContent = d.hasTarget ? d.target : "∞";
+  if (d.hasTarget) {
+    targetTitleEl.textContent = "Target";
+    targetLabelEl.textContent = String(d.target);
+  } else {
+    targetTitleEl.textContent = "Mode";
+    targetLabelEl.textContent = "∞";
+  }
 
-  descBoxEl.textContent = d.description || "";
+  // For counter view, use plain text so newlines are preserved naturally
+  descBoxEl.textContent = (d.description || "").trim();
 }
 
 /* =========================
    Counter actions
 ========================= */
-
-tapBtn.onclick = () => {
+function tap() {
   const d = getActive();
-  const step = clampInt(d.step, 1);
+  const step = clampInt(d.step || 1, 1);
   d.today += step;
   d.total += step;
   saveState();
   renderMenu();
   renderCounter();
-};
+}
 
-undoBtn.onclick = () => {
+function undo() {
   const d = getActive();
-  const step = clampInt(d.step, 1);
+  const step = clampInt(d.step || 1, 1);
   d.today = Math.max(0, d.today - step);
   d.total = Math.max(0, d.total - step);
   saveState();
   renderMenu();
   renderCounter();
-};
+}
 
-resetBtn.onclick = () => {
+function resetToday() {
   const d = getActive();
   if (!confirm("Reset today's count?")) return;
   d.today = 0;
   saveState();
   renderMenu();
   renderCounter();
-};
+}
 
 /* =========================
-   Navigation
+   Modal: open/close
 ========================= */
+function openModal() {
+  modal.classList.remove("hidden");
+}
 
-goCounterBtn.onclick = () => {
+function closeModal() {
+  modal.classList.add("hidden");
+  editingId = null;
+}
+
+function openAdd() {
+  editingId = null;
+  modalTitle.textContent = "Yeni Zikir";
+  dangerZone.classList.add("hidden");
+
+  nameInput.value = "";
+  descInput.value = "";
+  stepInput.value = "1";
+  targetInput.value = "100";
+  noTargetInput.checked = false;
+  targetInput.disabled = false;
+
+  openModal();
+}
+
+function openEdit(id) {
+  const d = state.dhikrs.find((x) => x.id === id);
+  if (!d) return;
+
+  editingId = id;
+  modalTitle.textContent = "Zikir Düzenle";
+  dangerZone.classList.remove("hidden");
+
+  nameInput.value = d.name || "";
+  descInput.value = d.description || "";
+  stepInput.value = String(d.step || 1);
+
+  noTargetInput.checked = !d.hasTarget;
+  targetInput.value = String(d.target || 100);
+  targetInput.disabled = !d.hasTarget;
+
+  openModal();
+}
+
+function saveFromModal() {
+  const name = (nameInput.value || "").trim();
+  if (!name) {
+    alert("Zikir adı boş olamaz.");
+    return;
+  }
+
+  const step = clampInt(stepInput.value, 1);
+  const isNoTarget = !!noTargetInput.checked;
+
+  const hasTarget = !isNoTarget;
+  const target = hasTarget ? clampInt(targetInput.value, 100) : null;
+
+  const description = (descInput.value || "").trim();
+
+  if (!editingId) {
+    // Create new
+    const newDhikr = {
+      id: uuid(),
+      name,
+      hasTarget,
+      target,
+      step,
+      today: 0,
+      total: 0,
+      description
+    };
+
+    // If it's a free counter, replace existing free counter
+    if (!hasTarget) {
+      const idx = state.dhikrs.findIndex((d) => d.hasTarget === false);
+      if (idx >= 0) {
+        // Keep counts if user wants, but here we replace as new free
+        newDhikr.today = state.dhikrs[idx].today;
+        newDhikr.total = state.dhikrs[idx].total;
+        state.dhikrs[idx] = newDhikr;
+      } else {
+        state.dhikrs.unshift(newDhikr);
+      }
+    } else {
+      state.dhikrs.push(newDhikr);
+    }
+
+    state.activeId = newDhikr.id;
+  } else {
+    // Update existing
+    const d = state.dhikrs.find((x) => x.id === editingId);
+    if (!d) return;
+
+    // Do not allow converting any item into a "second" free counter; free must be unique
+    if (!hasTarget && d.hasTarget === true) {
+      // If user tries to make a normal dhikr free, we swap with the existing free counter
+      const freeIdx = state.dhikrs.findIndex((x) => x.hasTarget === false);
+      if (freeIdx >= 0) {
+        // Move this item to free slot by swapping content (keep ids stable)
+        const free = state.dhikrs[freeIdx];
+
+        // Swap key fields
+        free.name = name;
+        free.description = description;
+        free.step = step;
+        free.hasTarget = false;
+        free.target = null;
+
+        // Update the edited one (now will become a normal dhikr again)
+        d.hasTarget = true;
+        d.target = clampInt(targetInput.value, 100);
+
+        // Ensure active points to free if editing free
+        state.activeId = free.id;
+      }
+    } else {
+      d.name = name;
+      d.description = description;
+      d.step = step;
+      d.hasTarget = hasTarget;
+      d.target = target;
+
+      if (!hasTarget) d.target = null;
+    }
+  }
+
+  ensureFreeCounter();
+  saveState();
+  renderMenu();
   renderCounter();
-  switchView("counter");
-};
+  closeModal();
+}
 
-backBtn.onclick = () => {
-  switchView("menu");
-};
+function deleteDhikr(id) {
+  const d = state.dhikrs.find((x) => x.id === id);
+  if (!d) return;
+
+  // Prevent deleting the pinned free counter (always keep one)
+  if (!d.hasTarget) {
+    alert("Serbest Sayaç silinemez. İstersen Düzenle ile adını/açıklamasını değiştirebilirsin.");
+    return;
+  }
+
+  if (!confirm(`"${d.name}" silinsin mi?`)) return;
+
+  state.dhikrs = state.dhikrs.filter((x) => x.id !== id);
+
+  // If active deleted, fall back to free counter
+  if (state.activeId === id) {
+    const free = state.dhikrs.find((x) => x.hasTarget === false);
+    state.activeId = free ? free.id : state.dhikrs[0]?.id || null;
+  }
+
+  saveState();
+  renderMenu();
+  renderCounter();
+}
+
+function deleteFromModal() {
+  if (!editingId) return;
+  deleteDhikr(editingId);
+  closeModal();
+}
+
+/* Disable target input when free counter is checked */
+noTargetInput.addEventListener("change", () => {
+  targetInput.disabled = noTargetInput.checked;
+});
+
+/* =========================
+   Event bindings
+========================= */
+openAddBtn.addEventListener("click", openAdd);
+backBtn.addEventListener("click", () => switchView("menu"));
+
+tapBtn.addEventListener("click", tap);
+undoBtn.addEventListener("click", undo);
+resetBtn.addEventListener("click", resetToday);
+
+closeModalBtn.addEventListener("click", closeModal);
+cancelBtn.addEventListener("click", closeModal);
+saveBtn.addEventListener("click", saveFromModal);
+deleteBtn.addEventListener("click", deleteFromModal);
+
+// Close modal when clicking outside
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) closeModal();
+});
+
+// Close modal with ESC key
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+    closeModal();
+  }
+});
 
 /* =========================
    Initial render
 ========================= */
-
 renderMenu();
 renderCounter();
 switchView("menu");
