@@ -18,15 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------- Default data --------
   const DEFAULT_STATE = {
     dhikrs: [
-      { id: "free", name: "Serbest Sayaç", free: true, target: null, today: 0, total: 0,
-        desc: "Hedefsiz sayaç. İstediğin kadar say." },
-
-      { id: "latif", name: "Ya Latif (c.c.)", target: 100, today: 0, total: 0,
-        desc: "Rızık bolluğu, ferahlık, huzur için okunur." },
-
-      { id: "safi", name: "Ya Şâfi (c.c.)", target: 100, today: 0, total: 0,
-        desc: "Şifa için okunur." },
-
       { id: "tefriciye", name: "Salât-ı Tefriciye (Nâriye)", target: 11, today: 0, total: 0,
         desc:
 `🕌 Arapça:
@@ -38,7 +29,16 @@ Allahümme salli salâten kâmileten ve sellim selâmen tâmmâen alâ seyyidin�
 ve alâ âlihî ve sahbihî fî kulli lamhatin ve nefesin bi ʿadedi kulli maʿlûmin lek.
 
 ℹ️ Kısa bilgi:
-Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.` }
+Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.` },
+      
+      { id: "free", name: "Serbest Sayaç", free: true, target: null, today: 0, total: 0,
+        desc: "Hedefsiz sayaç. İstediğin kadar say." },
+
+      { id: "latif", name: "Ya Latif (c.c.)", target: 100, today: 0, total: 0,
+        desc: "Rızık bolluğu, ferahlık, huzur için okunur." },
+
+      { id: "safi", name: "Ya Şâfi (c.c.)", target: 100, today: 0, total: 0,
+        desc: "Şifa için okunur." },
     ],
     activeId: "free"
   };
