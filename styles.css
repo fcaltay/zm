@@ -6,17 +6,14 @@
   --accent:#2ef3ff;
   --accent2:#00c8d6;
   --danger:#ff5a6b;
+  --card: rgba(255,255,255,.06);
   --border: rgba(255,255,255,.10);
   --radius:18px;
   --shadow: 0 25px 60px rgba(0,0,0,.45);
 }
 
 *{ box-sizing:border-box; }
-
-html, body{
-  height:auto;
-  min-height:100%;
-}
+html, body { height:auto; min-height:100%; }
 
 body{
   margin:0;
@@ -26,16 +23,17 @@ body{
     radial-gradient(1100px 650px at 30% 20%, rgba(46,243,255,.16), transparent 55%),
     radial-gradient(900px 600px at 80% 35%, rgba(0,200,214,.13), transparent 55%),
     linear-gradient(180deg, var(--bg2), var(--bg1));
-  display:block;
+  display:block;           /* IMPORTANT: avoid flex layout bugs */
   padding:20px;
   overflow-x:hidden;
 }
 
 .app{
-  width:min(980px, 100%);
+  width:min(1100px, 100%);
   margin:0 auto;
 }
 
+/* Header */
 .header{
   display:flex;
   align-items:flex-end;
@@ -43,22 +41,14 @@ body{
   gap:14px;
   margin-bottom:18px;
 }
-.header h1{ margin:0; font-size:28px; }
+.header h1{ margin:0; font-size:30px; letter-spacing:.2px; }
 .subtitle{ margin:6px 0 0; color:var(--muted); }
 
-.pwaHint{
-  font-size:12px;
-  color:var(--muted);
-  border:1px dashed var(--border);
-  padding:8px 10px;
-  border-radius:12px;
-  max-width:280px;
-}
+/* Views */
+.view{ display:block; }
 .hidden{ display:none !important; }
 
-.view{ display:block; }
-
-/* Two-column menu layout */
+/* ===== MENU GRID (Left free / Right others) ===== */
 .menuGrid2{
   display:grid;
   grid-template-columns: 360px 1fr;
@@ -66,12 +56,12 @@ body{
   align-items:start;
 }
 @media (max-width: 900px){
-  .menuGrid2{ grid-template-columns:1fr; }
+  .menuGrid2{ grid-template-columns: 1fr; }
 }
 
 .leftCol, .rightCol{
   background: rgba(255,255,255,.03);
-  border:1px solid var(--border);
+  border:1px solid rgba(255,255,255,.10);
   border-radius: var(--radius);
   padding:12px;
   box-shadow: var(--shadow);
@@ -93,9 +83,25 @@ body{
 
 .cards{
   display:grid;
-  gap:12px;
+  grid-template-columns: 1fr;
+  gap:14px;
 }
 
+/* Big action button */
+.bigBtn{
+  width:100%;
+  margin-top:12px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color:#041018;
+  border:none;
+  padding:12px 14px;
+  border-radius: var(--radius);
+  font-weight:900;
+  cursor:pointer;
+}
+.bigBtn:hover{ filter: brightness(1.03); }
+
+/* Mini Add button */
 .addMini{
   background: rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.12);
@@ -104,29 +110,22 @@ body{
   border-radius:14px;
   cursor:pointer;
 }
+.addMini:hover{ border-color: rgba(46,243,255,.45); }
 
-.bigBtn{
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  color:#041018;
-  border:none;
-  padding:12px 14px;
-  border-radius: var(--radius);
-  font-weight:900;
-  cursor:pointer;
-  width:100%;
-  margin-top:12px;
-}
-
+/* ===== Cards ===== */
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border:1px solid var(--border);
+  border:1px solid rgba(255,255,255,.10);
   border-radius: var(--radius);
-  padding:14px;
+  padding:14px 16px;
+  box-shadow: var(--shadow);
 }
+
 .card.selected{
   border-color: rgba(46,243,255,.55);
   box-shadow: 0 25px 60px rgba(0,200,214,.18);
 }
+
 .card.freePinned{
   border-color: rgba(46,243,255,.55);
   box-shadow: 0 25px 60px rgba(0,200,214,.18);
@@ -138,27 +137,12 @@ body{
   justify-content:space-between;
   gap:12px;
 }
+
 .title{
   font-weight:900;
-  font-size:16px;
+  font-size:17px;
   margin:0;
 }
-
-.badges{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-.badge{
-  font-size:12px;
-  padding:4px 8px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.14);
-  color:var(--muted);
-}
-.badge.sel{ border-color: rgba(46,243,255,.55); color: var(--text); }
-.badge.free{ border-color: rgba(255,255,255,.22); }
 
 .meta{
   display:flex;
@@ -170,16 +154,29 @@ body{
 }
 .meta b{ color:var(--text); }
 
+.badges{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.badge{
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--muted);
+}
+.badge.sel{ border-color: rgba(46,243,255,.55); color: var(--text); }
+.badge.free{ border-color: rgba(255,255,255,.20); }
+
 .descPreview{
   margin:10px 0 0;
-  color: rgba(232,241,255,.80);
+  color: rgba(232,241,255,.82);
   font-size:13px;
-  line-height:1.35;
+  line-height:1.45;
   white-space:pre-line;
-  max-height:5.0em;
+  max-height: 6.2em;
   overflow:hidden;
+  padding-right:4px;
 }
 
+/* Arabic block formatting if you wrap with a span later */
 .arabicLine{
   direction: rtl;
   unicode-bidi: plaintext;
@@ -187,44 +184,58 @@ body{
   line-height:1.7;
 }
 
+/* ===== Buttons (GLOBAL FIX) ===== */
+/* This is the main fix for your screenshot: default white buttons */
+button{
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  color: #e8f1ff;
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+button:hover{
+  border-color: rgba(46,243,255,.55);
+}
+
+button:active{
+  transform: translateY(1px);
+}
+
 .cardBtns{
   display:flex;
-  gap:8px;
+  gap:10px;
   margin-top:12px;
   flex-wrap:wrap;
 }
 
-.smallBtn{
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  color:var(--text);
-  padding:8px 10px;
-  border-radius:12px;
-  cursor:pointer;
+.cardBtns button[data-action="delete"]{
+  border-color: rgba(255,90,107,.55);
+  color: rgba(255,220,225,.95);
 }
-.smallBtn:hover{ border-color: rgba(46,243,255,.35); }
-.smallBtn.danger{ border-color: rgba(255,90,107,.35); }
-
-.btn{
-  background: rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  color:var(--text);
-  padding:10px 12px;
-  border-radius:14px;
-  cursor:pointer;
+.cardBtns button[data-action="delete"]:hover{
+  border-color: rgba(255,90,107,.85);
 }
-.btn.ghost{ background: transparent; }
-.btn.danger{ border-color: rgba(255,90,107,.40); }
 
+/* ===== Counter view ===== */
 .topRow{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
+  margin-bottom:8px;
 }
+
 .activeMeta{ text-align:right; }
 .activeName{ font-weight:900; font-size:16px; }
 .activeSub{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+.btn.ghost{
+  background: transparent;
+  border:1px solid rgba(255,255,255,.12);
+}
 
 .ring{
   width:230px; height:230px;
@@ -257,6 +268,7 @@ body{
   font-weight:900;
   cursor:pointer;
 }
+.tapBtn:hover{ filter: brightness(1.03); }
 
 .actions{
   display:flex;
@@ -264,6 +276,10 @@ body{
   justify-content:center;
   flex-wrap:wrap;
   margin-bottom:14px;
+}
+
+.btn.danger{
+  border-color: rgba(255,90,107,.40);
 }
 
 .panel{
@@ -295,11 +311,11 @@ body{
   border:1px solid rgba(255,255,255,.08);
   color: rgba(232,241,255,.82);
   white-space:pre-line;
-  line-height:1.4;
+  line-height:1.45;
   font-size:13px;
 }
 
-/* Modal */
+/* ===== Modal ===== */
 .modal{
   position:fixed;
   inset:0;
@@ -308,6 +324,7 @@ body{
   place-items:center;
   padding:16px;
 }
+
 .modalCard{
   width:min(620px, 100%);
   background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
@@ -316,13 +333,13 @@ body{
   box-shadow: var(--shadow);
   padding:14px;
 }
+
 .modalHead{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
 }
-.modalHead h2{ margin:0; font-size:18px; }
 
 .iconBtn{
   background: transparent;
@@ -330,17 +347,10 @@ body{
   color:var(--text);
   border-radius:12px;
   padding:6px 10px;
-  cursor:pointer;
 }
 
 .form{ margin-top:10px; display:grid; gap:10px; }
-
-label{
-  display:grid;
-  gap:6px;
-  color: rgba(232,241,255,.86);
-  font-size:13px;
-}
+label{ display:grid; gap:6px; color: rgba(232,241,255,.86); font-size:13px; }
 
 input, textarea{
   width:100%;
@@ -351,6 +361,7 @@ input, textarea{
   padding:10px 12px;
   outline:none;
 }
+
 textarea{ resize:vertical; min-height:120px; }
 
 .row2{
@@ -380,6 +391,7 @@ textarea{ resize:vertical; min-height:120px; }
   flex-wrap:wrap;
   margin-top:4px;
 }
+
 .dangerZone{
   margin-top:8px;
   padding-top:10px;
