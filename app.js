@@ -1,12 +1,53 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Simple in-memory list (no localStorage yet)
-  const dhikrs = [
-    { id: "free", name: "Serbest Sayaç", free: true, today: 0, total: 0, desc: "Hedefsiz sayaç. İstediğin kadar say." },
-    { id: "latif", name: "Ya Latif (c.c.)", target: 100, today: 0, total: 0, desc: "Rızık bolluğu, ferahlık, huzur için okunur." },
-    { id: "safi", name: "Ya Şâfi (c.c.)", target: 100, today: 0, total: 0, desc: "Şifa için okunur." },
-    { id: "tefriciye", name: "Salât-ı Tefriciye (Nâriye)", target: 11, today: 0, total: 0, desc: "Sıkıntıların açılması ve ferahlık için okunur." }
-  ];
+  // -------- Storage helpers --------
+  const KEY = "zikir-matik-state-v1";
 
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function save(state) {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  // -------- Default data --------
+  const DEFAULT_STATE = {
+    dhikrs: [
+      { id: "free", name: "Serbest Sayaç", free: true, target: null, today: 0, total: 0,
+        desc: "Hedefsiz sayaç. İstediğin kadar say." },
+
+      { id: "latif", name: "Ya Latif (c.c.)", target: 100, today: 0, total: 0,
+        desc: "Rızık bolluğu, ferahlık, huzur için okunur." },
+
+      { id: "safi", name: "Ya Şâfi (c.c.)", target: 100, today: 0, total: 0,
+        desc: "Şifa için okunur." },
+
+      { id: "tefriciye", name: "Salât-ı Tefriciye (Nâriye)", target: 11, today: 0, total: 0,
+        desc:
+`🕌 Arapça:
+اللَّهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تُنْحَلُّ بِهِ الْعُقَدُ وَتَنْفَرِجُ بِهِ الْكُرَبُ وَتُقْضَى بِهِ الْحَوَائِجُ وَتُنَالُ بِهِ الرَّغَائِبُ وَحُسْنُ الْخَوَاتِيمِ وَيُسْتَسْقَى الْغَمَامُ بِوَجْهِهِ الْكَرِيمِ
+وَعَلَى آلِهِ وَصَحْبِهِ فِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ.
+
+🔤 Okunuş:
+Allahümme salli salâten kâmileten ve sellim selâmen tâmmâen alâ seyyidinâ Muhammedinillezî tunhallu bihil ʿukad ve tenfericu bihil kürab ve تُقضى bihil havâic ve تُنال bihir ragâib ve husnül havâtim ve yustaskal ghamâm bi vechihil kerîm;
+ve alâ âlihî ve sahbihî fî kulli lamhatin ve nefesin bi ʿadedi kulli maʿlûmin lek.
+
+ℹ️ Kısa bilgi:
+Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.` }
+    ],
+    activeId: "free"
+  };
+
+  // -------- Load state (or init) --------
+  let state = load();
+  if (!state || !Array.isArray(state.dhikrs)) state = structuredClone(DEFAULT_STATE);
+
+  // -------- DOM --------
   const freeSlot = document.getElementById("freeSlot");
   const dhikrList = document.getElementById("dhikrList");
   const menuView = document.getElementById("menuView");
@@ -25,37 +66,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const backBtn = document.getElementById("backBtn");
   const undoBtn = document.getElementById("undoBtn");
   const resetBtn = document.getElementById("resetBtn");
+  const resetDataBtn = document.getElementById("resetDataBtn");
 
-  let active = dhikrs[0];
+  // -------- State helpers --------
+  function getActive() {
+    return state.dhikrs.find(d => d.id === state.activeId) || state.dhikrs[0];
+  }
 
   function switchToMenu() {
     counterView.classList.add("hidden");
     menuView.classList.remove("hidden");
   }
 
-  function switchToCounter() {
+  function switchToCounter(id) {
+    state.activeId = id;
+    save(state);
     menuView.classList.add("hidden");
     counterView.classList.remove("hidden");
     renderCounter();
   }
 
+  // -------- Render --------
   function renderMenu() {
     freeSlot.innerHTML = "";
     dhikrList.innerHTML = "";
 
-    dhikrs.forEach((d) => {
+    state.dhikrs.forEach((d) => {
       const card = document.createElement("div");
       card.className = "card";
+      const todayPart = d.target ? `${d.today} / ${d.target}` : `${d.today} / ∞`;
+
+      // show only short preview in menu
+      const preview = (d.desc || "").split("\n").slice(0, 2).join("\n");
+
       card.innerHTML = `
         <div class="title">${d.name}</div>
-        <div class="meta">Bugün: <b>${d.today}</b>${d.target ? " / " + d.target : " / ∞"} · Toplam: <b>${d.total}</b></div>
-        <div class="descPreview">${d.desc}</div>
+        <div class="meta">Bugün: <b>${todayPart}</b> · Toplam: <b>${d.total}</b></div>
+        <div class="descPreview">${preview}</div>
       `;
 
-      card.addEventListener("click", () => {
-        active = d;
-        switchToCounter();
-      });
+      card.addEventListener("click", () => switchToCounter(d.id));
 
       if (d.free) freeSlot.appendChild(card);
       else dhikrList.appendChild(card);
@@ -63,51 +113,84 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderCounter() {
-    activeNameEl.textContent = active.name;
-    activeSubEl.textContent = active.target ? `Hedef: ${active.target}` : "Serbest sayaç";
+    const a = getActive();
+    activeNameEl.textContent = a.name;
 
-    countEl.textContent = String(active.today);
-    todayLabelEl.textContent = String(active.today);
-    totalLabelEl.textContent = String(active.total);
-
-    if (active.target) {
+    if (a.target) {
+      activeSubEl.textContent = `Hedef: ${a.target}`;
       targetTitleEl.textContent = "Hedef";
-      targetLabelEl.textContent = String(active.target);
+      targetLabelEl.textContent = String(a.target);
     } else {
+      activeSubEl.textContent = "Serbest sayaç";
       targetTitleEl.textContent = "Mod";
       targetLabelEl.textContent = "∞";
     }
 
-    descBoxEl.textContent = active.desc;
+    countEl.textContent = String(a.today);
+    todayLabelEl.textContent = String(a.today);
+    totalLabelEl.textContent = String(a.total);
+
+    // full text on counter screen
+    descBoxEl.textContent = a.desc || "";
   }
 
+  // -------- Actions --------
   function tap() {
-    active.today += 1;
-    active.total += 1;
+    const a = getActive();
+    a.today += 1;
+    a.total += 1;
+    save(state);
     renderCounter();
     renderMenu();
   }
 
   function undo() {
-    active.today = Math.max(0, active.today - 1);
-    active.total = Math.max(0, active.total - 1);
+    const a = getActive();
+    a.today = Math.max(0, a.today - 1);
+    a.total = Math.max(0, a.total - 1);
+    save(state);
     renderCounter();
     renderMenu();
   }
 
   function resetToday() {
-    active.today = 0;
+    const a = getActive();
+    if (!confirm("Bugünkü sayım sıfırlansın mı?")) return;
+    a.today = 0;
+    save(state);
     renderCounter();
     renderMenu();
   }
 
-  // Events
+  function resetAllData() {
+    if (!confirm("Tüm veriler silinsin mi? (Sayaçlar, toplamlar, hepsi)")) return;
+    localStorage.removeItem(KEY);
+    state = structuredClone(DEFAULT_STATE);
+    save(state);
+    renderMenu();
+    switchToMenu();
+  }
+
+  // -------- Events --------
   ringTap.addEventListener("click", tap);
+  ringTap.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      tap();
+    }
+  });
+
   undoBtn.addEventListener("click", undo);
   resetBtn.addEventListener("click", resetToday);
-  backBtn.addEventListener("click", switchToMenu);
+  backBtn.addEventListener("click", () => {
+    switchToMenu();
+    renderMenu();
+  });
 
-  // Initial render
+  resetDataBtn.addEventListener("click", resetAllData);
+
+  // -------- Init --------
+  save(state);
   renderMenu();
   switchToMenu();
 });
