@@ -6,8 +6,10 @@
   <meta name="theme-color" content="#061a2b" />
   <title>Zikir Matik</title>
 
-  <!-- PWA -->
+  <!-- PWA manifest -->
   <link rel="manifest" href="manifest.webmanifest" />
+
+  <!-- iOS home-screen icon hint (optional) -->
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -21,25 +23,34 @@
         <p class="subtitle">Zikirlerinizi kolayca takip edin</p>
       </div>
 
-      <!-- iOS için kısa not -->
-      <div class="pwaHint" id="pwaHint">
+      <!-- iOS PWA install hint -->
+      <div class="pwaHint hidden" id="pwaHint">
         iPhone: Safari → Paylaş → <b>Ana Ekrana Ekle</b>
       </div>
     </header>
 
     <!-- ===== MENU VIEW ===== -->
     <section id="menuView" class="view">
-      <div class="menuGrid">
-        <div class="cards" id="dhikrList"></div>
+      <div class="menuGrid2">
 
-        <aside class="side">
-          <button class="addCard" id="openAddBtn" type="button">
-            <div class="plus">＋</div>
-            <div class="addText">Ekle</div>
-          </button>
+        <!-- LEFT: pinned free counter -->
+        <div class="leftCol">
+          <div class="colTitle">Serbest Sayaç</div>
+          <div id="freeSlot"></div>
+        </div>
+
+        <!-- RIGHT: all other counters -->
+        <div class="rightCol">
+          <div class="rightTop">
+            <div class="colTitle">Diğer Zikirler</div>
+            <button class="addMini" id="openAddBtn" type="button">＋ Ekle</button>
+          </div>
+
+          <div class="cards" id="dhikrList"></div>
 
           <button class="bigBtn" id="goCounterBtn" type="button">Devam Et</button>
-        </aside>
+        </div>
+
       </div>
     </section>
 
@@ -56,7 +67,7 @@
       <div class="ring" aria-hidden="true">
         <div class="ringInner">
           <div class="count" id="count">0</div>
-          <div class="small" id="modeLabel">Bugün</div>
+          <div class="small">Bugün</div>
         </div>
       </div>
 
@@ -89,12 +100,12 @@
       </div>
     </section>
 
-    <!-- ===== ADD / EDIT MODAL ===== -->
+    <!-- ===== ADD/EDIT MODAL ===== -->
     <div class="modal hidden" id="modal">
       <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modalHead">
           <h2 id="modalTitle">Yeni Zikir</h2>
-          <button class="iconBtn" id="closeModalBtn" type="button" aria-label="Kapat">✕</button>
+          <button class="iconBtn" id="closeModalBtn" type="button" aria-label="Close">✕</button>
         </div>
 
         <div class="form">
