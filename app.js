@@ -25,8 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 وَعَلَى آلِهِ وَصَحْبِهِ فِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ.
 
 🔤 Okunuş:
-Allahümme salli salâten kâmileten ve sellim selâmen tâmmâen alâ seyyidinâ Muhammedinillezî tunhallu bihil ʿukad ve tenfericu bihil kürab ve تُقضى bihil havâic ve تُنال bihir ragâib ve husnül havâtim ve yustaskal ghamâm bi vechihil kerîm;
-ve alâ âlihî ve sahbihî fî kulli lamhatin ve nefesin bi ʿadedi kulli maʿlûmin lek.
+Allâhumme salli salâten kâmileten ve sellim selâmen tâmmen alâ Seyyidinâ Muhammedinillezî tenhallü bihil ukadü ve tenfericu bihil-kürebü ve tukdâ bihil-havâicu ve tünâlü bihir-reğâibü ve hüsnül-havâtimi ve yustaskal ğamâmu bivechihil Kerîm ve alâ âlihî ve sahbihi fî külli lemhatin ve nefesin bi adedi külli ma’lûmin lek
 
 ℹ️ Kısa bilgi:
 Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.` },
