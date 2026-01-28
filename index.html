@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#061a2b" />
   <title>Zikir Matik</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
 
@@ -28,8 +27,16 @@
     <div class="menuGrid2">
 
       <div class="leftCol">
-        <div class="colTitle">Serbest Sayaç</div>
+        <div class="colTitleRow">
+          <div class="colTitle">Serbest Sayaç</div>
+        </div>
         <div id="freeSlot"></div>
+
+        <!-- RESET DATA BUTTON -->
+        <div class="leftBottom">
+          <button id="resetDataBtn" class="btn danger full">🧹 Verileri Sıfırla</button>
+          <div class="hint">Bu işlem tüm sayaçları ve kayıtlı verileri siler.</div>
+        </div>
       </div>
 
       <div class="rightCol">
@@ -54,7 +61,8 @@
       </div>
     </div>
 
-    <div id="ringTap" class="ring">
+    <!-- Tap ring -->
+    <div id="ringTap" class="ring" role="button" tabindex="0" aria-label="Sayaç artır">
       <div class="ringInner">
         <div id="count" class="count">0</div>
         <div class="small">Buraya dokun</div>
@@ -91,6 +99,7 @@
 
 </main>
 
-<script src="./app.js"></script>
+<!-- cache-buster to avoid old JS on phone -->
+<script src="./app.js?v=2026-01-28"></script>
 </body>
 </html>
