@@ -6,7 +6,6 @@
   --accent:#2ef3ff;
   --accent2:#00c8d6;
   --danger:#ff5a6b;
-  --card: rgba(255,255,255,.06);
   --border: rgba(255,255,255,.10);
   --radius:18px;
   --shadow: 0 25px 60px rgba(0,0,0,.45);
@@ -23,7 +22,7 @@ body{
     radial-gradient(1100px 650px at 30% 20%, rgba(46,243,255,.16), transparent 55%),
     radial-gradient(900px 600px at 80% 35%, rgba(0,200,214,.13), transparent 55%),
     linear-gradient(180deg, var(--bg2), var(--bg1));
-  display:block;           /* IMPORTANT: avoid flex layout bugs */
+  display:block;
   padding:20px;
   overflow-x:hidden;
 }
@@ -48,7 +47,7 @@ body{
 .view{ display:block; }
 .hidden{ display:none !important; }
 
-/* ===== MENU GRID (Left free / Right others) ===== */
+/* ===== MENU GRID ===== */
 .menuGrid2{
   display:grid;
   grid-template-columns: 360px 1fr;
@@ -87,30 +86,23 @@ body{
   gap:14px;
 }
 
-/* Big action button */
-.bigBtn{
-  width:100%;
-  margin-top:12px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  color:#041018;
-  border:none;
-  padding:12px 14px;
-  border-radius: var(--radius);
-  font-weight:900;
-  cursor:pointer;
-}
-.bigBtn:hover{ filter: brightness(1.03); }
-
-/* Mini Add button */
-.addMini{
+/* ===== GLOBAL BUTTONS ===== */
+button{
   background: rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  color:var(--text);
+  border:1px solid rgba(255,255,255,.15);
+  color: #e8f1ff;
+  padding:9px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:13px;
+}
+button:hover{ border-color: rgba(46,243,255,.55); }
+button:active{ transform: translateY(1px); }
+
+.addMini{
   padding:10px 12px;
   border-radius:14px;
-  cursor:pointer;
 }
-.addMini:hover{ border-color: rgba(46,243,255,.45); }
 
 /* ===== Cards ===== */
 .card{
@@ -119,6 +111,7 @@ body{
   border-radius: var(--radius);
   padding:14px 16px;
   box-shadow: var(--shadow);
+  cursor:pointer; /* card is clickable */
 }
 
 .card.selected{
@@ -173,44 +166,18 @@ body{
   white-space:pre-line;
   max-height: 6.2em;
   overflow:hidden;
-  padding-right:4px;
 }
 
-/* Arabic block formatting if you wrap with a span later */
-.arabicLine{
-  direction: rtl;
-  unicode-bidi: plaintext;
-  font-size:15px;
-  line-height:1.7;
-}
-
-/* ===== Buttons (GLOBAL FIX) ===== */
-/* This is the main fix for your screenshot: default white buttons */
-button{
-  background: rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  color: #e8f1ff;
-  padding:8px 12px;
-  border-radius:12px;
-  cursor:pointer;
-  font-size:13px;
-}
-
-button:hover{
-  border-color: rgba(46,243,255,.55);
-}
-
-button:active{
-  transform: translateY(1px);
-}
-
+/* Card buttons area */
 .cardBtns{
   display:flex;
   gap:10px;
   margin-top:12px;
   flex-wrap:wrap;
 }
-
+.cardBtns button{
+  cursor:pointer;
+}
 .cardBtns button[data-action="delete"]{
   border-color: rgba(255,90,107,.55);
   color: rgba(255,220,225,.95);
@@ -218,6 +185,9 @@ button:active{
 .cardBtns button[data-action="delete"]:hover{
   border-color: rgba(255,90,107,.85);
 }
+
+/* Make sure clicking buttons doesn't feel like clicking the whole card */
+.cardBtns button{ background: rgba(255,255,255,.06); }
 
 /* ===== Counter view ===== */
 .topRow{
@@ -228,14 +198,14 @@ button:active{
   margin-bottom:8px;
 }
 
-.activeMeta{ text-align:right; }
-.activeName{ font-weight:900; font-size:16px; }
-.activeSub{ color:var(--muted); font-size:12px; margin-top:2px; }
-
 .btn.ghost{
   background: transparent;
   border:1px solid rgba(255,255,255,.12);
 }
+
+.activeMeta{ text-align:right; }
+.activeName{ font-weight:900; font-size:16px; }
+.activeSub{ color:var(--muted); font-size:12px; margin-top:2px; }
 
 .ring{
   width:230px; height:230px;
@@ -244,7 +214,10 @@ button:active{
   border: 3px solid rgba(46,243,255,.45);
   box-shadow: 0 0 0 10px rgba(46,243,255,.06);
   display:grid; place-items:center;
+  user-select:none;
 }
+.ring:active{ transform: scale(0.995); }
+
 .ringInner{
   width:190px; height:190px;
   border-radius:50%;
@@ -254,21 +227,7 @@ button:active{
   text-align:center;
 }
 .count{ font-size:54px; font-weight:900; }
-.small{ color:var(--muted); margin-top:-8px; }
-
-.tapBtn{
-  display:block;
-  width:min(360px, 100%);
-  margin: 0 auto 12px;
-  padding:14px 16px;
-  border-radius: 18px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  border:none;
-  color:#041018;
-  font-weight:900;
-  cursor:pointer;
-}
-.tapBtn:hover{ filter: brightness(1.03); }
+.small{ color:var(--muted); margin-top:-8px; font-size:12px; }
 
 .actions{
   display:flex;
@@ -315,11 +274,11 @@ button:active{
   font-size:13px;
 }
 
-/* ===== Modal ===== */
+/* ===== Modal (less transparent) ===== */
 .modal{
   position:fixed;
   inset:0;
-  background: rgba(0,0,0,.55);
+  background: rgba(0,0,0,.78);
   display:grid;
   place-items:center;
   padding:16px;
@@ -327,10 +286,10 @@ button:active{
 
 .modalCard{
   width:min(620px, 100%);
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.10);
+  background: rgba(10, 20, 30, .92);
+  border:1px solid rgba(255,255,255,.14);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 25px 80px rgba(0,0,0,.65);
   padding:14px;
 }
 
@@ -340,6 +299,7 @@ button:active{
   justify-content:space-between;
   gap:10px;
 }
+.modalHead h2{ margin:0; font-size:18px; }
 
 .iconBtn{
   background: transparent;
