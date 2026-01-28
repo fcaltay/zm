@@ -4,98 +4,80 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#061a2b" />
-
   <title>Zikir Matik</title>
 
   <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
 <main class="app">
 
-  <!-- ===== HEADER ===== -->
   <header class="header">
     <div>
       <h1>Zikir Matik</h1>
-      <p class="subtitle">Zikirlerinizi hedefli veya serbest takip edin</p>
+      <p class="subtitle">Zikirlerinizi kolayca takip edin</p>
     </div>
   </header>
 
-  <!-- ===== MENU VIEW ===== -->
+  <!-- MENU -->
   <section id="menuView" class="view">
-
     <div class="menuGrid2">
 
-      <!-- LEFT: FREE COUNTER -->
       <div class="leftCol">
         <div class="colTitle">Serbest Sayaç</div>
         <div id="freeSlot"></div>
       </div>
 
-      <!-- RIGHT: OTHER DHIKRS -->
       <div class="rightCol">
-
         <div class="rightTop">
           <div class="colTitle">Diğer Zikirler</div>
-          <button id="openAddBtn" class="addMini" type="button">＋ Ekle</button>
+          <button id="openAddBtn" class="addMini">＋ Ekle</button>
         </div>
-
         <div id="dhikrList" class="cards"></div>
-
       </div>
-    </div>
 
+    </div>
   </section>
 
-  <!-- ===== COUNTER VIEW ===== -->
+  <!-- COUNTER -->
   <section id="counterView" class="view hidden">
 
     <div class="topRow">
-      <button id="backBtn" class="btn ghost" type="button">← Menü</button>
-
+      <button id="backBtn" class="btn ghost">← Menü</button>
       <div class="activeMeta">
-        <div id="activeName" class="activeName">—</div>
-        <div id="activeSub" class="activeSub">—</div>
+        <div id="activeName" class="activeName"></div>
+        <div id="activeSub" class="activeSub"></div>
       </div>
     </div>
 
-    <!-- TAP RING -->
-    <div id="ringTap" class="ring" role="button" tabindex="0" aria-label="Sayaç artır">
+    <div id="ringTap" class="ring">
       <div class="ringInner">
         <div id="count" class="count">0</div>
         <div class="small">Buraya dokun</div>
       </div>
     </div>
 
-    <!-- ACTIONS -->
     <div class="actions">
-      <button id="undoBtn" class="btn" type="button">Geri Al</button>
-      <button id="resetBtn" class="btn danger" type="button">Bugünü Sıfırla</button>
+      <button id="undoBtn" class="btn">Geri Al</button>
+      <button id="resetBtn" class="btn danger">Bugünü Sıfırla</button>
     </div>
 
-    <!-- INFO PANEL -->
     <div class="panel">
-
       <div class="panelRow">
         <div class="panelItem">
           <div class="label">Bugün</div>
           <div id="todayLabel" class="value">0</div>
         </div>
-
         <div class="divider"></div>
-
         <div class="panelItem">
           <div class="label">Toplam</div>
           <div id="totalLabel" class="value">0</div>
         </div>
-
         <div class="divider"></div>
-
         <div class="panelItem">
           <div id="targetTitle" class="label">Hedef</div>
           <div id="targetLabel" class="value">—</div>
@@ -107,62 +89,8 @@
 
   </section>
 
-  <!-- ===== ADD / EDIT MODAL ===== -->
-  <div id="modal" class="modal hidden">
-
-    <div class="modalCard" role="dialog" aria-modal="true">
-
-      <div class="modalHead">
-        <h2 id="modalTitle">Yeni Zikir</h2>
-        <button id="closeModalBtn" class="iconBtn" type="button">✕</button>
-      </div>
-
-      <div class="form">
-
-        <label>
-          Zikir adı
-          <input id="nameInput" type="text" maxlength="60" />
-        </label>
-
-        <label>
-          Açıklama (Arapça + okunuş + bilgi)
-          <textarea id="descInput" rows="7"></textarea>
-        </label>
-
-        <div class="row2">
-          <label>
-            Adım
-            <input id="stepInput" type="number" min="1" step="1" value="1" />
-          </label>
-
-          <label>
-            Hedef
-            <input id="targetInput" type="number" min="1" step="1" value="100" />
-          </label>
-        </div>
-
-        <label class="toggleRow">
-          <input id="noTargetInput" type="checkbox" />
-          <span>Hedefsiz (serbest sayaç)</span>
-        </label>
-
-        <div class="modalActions">
-          <button id="cancelBtn" class="btn ghost" type="button">Vazgeç</button>
-          <button id="saveBtn" class="btn" type="button">Kaydet</button>
-        </div>
-
-        <div id="dangerZone" class="dangerZone hidden">
-          <button id="deleteBtn" class="btn danger" type="button">Sil</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
 </main>
 
-<!-- IMPORTANT: app.js MUST be here -->
-<script src="app.js"></script>
-
+<script src="./app.js"></script>
 </body>
 </html>
