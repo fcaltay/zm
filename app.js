@@ -1,9 +1,9 @@
 /* =========================================================
    ZIKIR MATIK - app.js (FULL)
-   - Comments are in English by request
+   - Comments are in English
    - Free counter pinned on the left
-   - Other counters on the right
-   - Select opens the counter immediately (no "Devam Et")
+   - Cards open counter on click (no Select / no Continue)
+   - Counter increases by tapping the ring (no "Tıkla" button)
    - Add/Edit/Delete modal included
    - localStorage persistence + daily reset
    - PWA service worker register
@@ -58,7 +58,7 @@ function escapeHtml(str) {
 /* =========================
    Storage
 ========================= */
-const STORAGE_KEY = "zikir-matik-state-v3";
+const STORAGE_KEY = "zikir-matik-state-v4";
 
 function loadState() {
   try {
@@ -108,6 +108,24 @@ const DEFAULT_DHIKRS = [
     today: 0,
     total: 0,
     description: "Şifa, hastalıkların hafiflemesi ve manevi/bedeni iyilik için okunur."
+  },
+  {
+    id: "salat-tefriciye",
+    name: "Salât-ı Tefriciye (Nâriye)",
+    hasTarget: true,
+    target: 11,
+    step: 1,
+    today: 0,
+    total: 0,
+    description:
+`🕌 Arapça:
+اللَّهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تُنْحَلُّ بِهِ الْعُقَدُ وَتَنْفَرِجُ بِهِ الْكُرَبُ وَتُقْضَى بِهِ الْحَوَائِجُ وَتُنَالُ بِهِ الرَّغَائِبُ وَحُسْنُ الْخَوَاتِيمِ وَيُسْتَسْقَى الْغَمَامُ بِوَجْهِهِ الْكَرِيمِ وَعَلَى آلِهِ وَصَحْبِهِ فِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ.
+
+🔤 Okunuş:
+Allahümme salli salâten kâmileten ve sellim selâmen tâmmâen alâ seyyidinâ Muhammedinillezî tunhallu bihil ʿukad ve tenfericu bihil kürab ve تُقضى bihil havâic ve تُنال bihir ragâib ve husnül havâtim ve yustaskal ghamâm bi vechihil kerîm; ve alâ âlihî ve sahbihî fî kulli lamhatin ve nefesin bi ʿadedi kulli maʿlûmin lek.
+
+ℹ️ Açıklama:
+Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.`
   },
   {
     id: "euzu-kelimat",
@@ -183,7 +201,6 @@ function ensureFreeCounter() {
     };
     state.dhikrs.unshift(free);
     if (!state.activeId) state.activeId = free.id;
-    saveState();
   }
 }
 ensureFreeCounter();
@@ -208,7 +225,7 @@ const targetTitleEl = document.getElementById("targetTitle");
 const targetLabelEl = document.getElementById("targetLabel");
 const descBoxEl = document.getElementById("descBox");
 
-const tapBtn = document.getElementById("tapBtn");
+const ringTap = document.getElementById("ringTap");
 const undoBtn = document.getElementById("undoBtn");
 const resetBtn = document.getElementById("resetBtn");
 
@@ -251,8 +268,6 @@ function getActive() {
 /* =========================
    Rendering
 ========================= */
-
-// Formats description for preview; keeps it simple (safe)
 function formatPreview(text) {
   return escapeHtml((text || "").trim());
 }
@@ -264,18 +279,18 @@ function buildCard(d, pinned) {
     (pinned ? " freePinned" : "") +
     (d.id === state.activeId ? " selected" : "");
 
-  const badgeSelected = d.id === state.activeId ? `<span class="badge sel">Active</span>` : "";
-  const badgeFree = !d.hasTarget ? `<span class="badge free">Free ∞</span>` : "";
-  const badgeTarget = d.hasTarget ? `<span class="badge">Target: ${d.target}</span>` : "";
+  const badgeSelected = d.id === state.activeId ? `<span class="badge sel">Seçildi</span>` : "";
+  const badgeFree = !d.hasTarget ? `<span class="badge free">Serbest ∞</span>` : "";
+  const badgeTarget = d.hasTarget ? `<span class="badge">Hedef: ${d.target}</span>` : "";
 
   card.innerHTML = `
     <div class="cardTop">
       <div>
         <p class="title">${escapeHtml(d.name)}</p>
         <div class="meta">
-          <span>Today: <b>${d.today}</b>${d.hasTarget ? ` / <b>${d.target}</b>` : ` / <b>∞</b>`}</span>
-          <span>Total: <b>${d.total}</b></span>
-          <span>Step: <b>${d.step || 1}</b></span>
+          <span>Bugün: <b>${d.today}</b>${d.hasTarget ? ` / <b>${d.target}</b>` : ` / <b>∞</b>`}</span>
+          <span>Toplam: <b>${d.total}</b></span>
+          <span>Adım: <b>${d.step || 1}</b></span>
         </div>
       </div>
       <div class="badges">
@@ -288,34 +303,30 @@ function buildCard(d, pinned) {
     <div class="descPreview">${formatPreview(d.description)}</div>
 
     <div class="cardBtns">
-      <button data-action="select" data-id="${d.id}">Select</button>
-      <button data-action="edit" data-id="${d.id}">Edit</button>
-      <button data-action="delete" data-id="${d.id}">Delete</button>
+      <button data-action="edit" data-id="${d.id}" type="button">Düzenle</button>
+      <button data-action="delete" data-id="${d.id}" type="button">Sil</button>
     </div>
   `;
 
-  // Attach events
+  // Card click opens counter, but ignore clicks on buttons
+  card.addEventListener("click", (e) => {
+    const clickedButton = e.target.closest("button");
+    if (clickedButton) return;
+
+    state.activeId = d.id;
+    saveState();
+    renderMenu();
+    renderCounter();
+    switchView("counter");
+  });
+
+  // Button events
   card.querySelectorAll("button[data-action]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
       const action = btn.getAttribute("data-action");
-
-      if (action === "select") {
-        // Select and open counter immediately
-        state.activeId = id;
-        saveState();
-        renderMenu();
-        renderCounter();
-        switchView("counter");
-      }
-
-      if (action === "edit") {
-        openEdit(id);
-      }
-
-      if (action === "delete") {
-        deleteDhikr(id);
-      }
+      if (action === "edit") openEdit(id);
+      if (action === "delete") deleteDhikr(id);
     });
   });
 
@@ -328,11 +339,11 @@ function renderMenu() {
   freeSlot.innerHTML = "";
   dhikrList.innerHTML = "";
 
-  // Free counter goes to the left column
+  // Free counter on the left
   const free = state.dhikrs.find((d) => d.hasTarget === false);
   if (free) freeSlot.appendChild(buildCard(free, true));
 
-  // All target-based dhikrs go to the right column
+  // Target-based counters on the right
   state.dhikrs
     .filter((d) => d.hasTarget === true)
     .forEach((d) => dhikrList.appendChild(buildCard(d, false)));
@@ -342,21 +353,22 @@ function renderCounter() {
   const d = getActive();
 
   activeNameEl.textContent = d.name;
-  activeSubEl.textContent = d.hasTarget ? `Target: ${d.target} | Step: ${d.step || 1}` : `Free counter | Step: ${d.step || 1}`;
+  activeSubEl.textContent = d.hasTarget
+    ? `Hedef: ${d.target}  •  Adım: ${d.step || 1}`
+    : `Serbest sayaç  •  Adım: ${d.step || 1}`;
 
   countEl.textContent = d.today;
   todayLabelEl.textContent = d.today;
   totalLabelEl.textContent = d.total;
 
   if (d.hasTarget) {
-    targetTitleEl.textContent = "Target";
+    targetTitleEl.textContent = "Hedef";
     targetLabelEl.textContent = String(d.target);
   } else {
-    targetTitleEl.textContent = "Mode";
+    targetTitleEl.textContent = "Mod";
     targetLabelEl.textContent = "∞";
   }
 
-  // For counter view, use plain text so newlines are preserved naturally
   descBoxEl.textContent = (d.description || "").trim();
 }
 
@@ -385,7 +397,7 @@ function undo() {
 
 function resetToday() {
   const d = getActive();
-  if (!confirm("Reset today's count?")) return;
+  if (!confirm("Bugünkü sayım sıfırlansın mı?")) return;
   d.today = 0;
   saveState();
   renderMenu();
@@ -393,7 +405,7 @@ function resetToday() {
 }
 
 /* =========================
-   Modal: open/close
+   Modal open/close
 ========================= */
 function openModal() {
   modal.classList.remove("hidden");
@@ -450,11 +462,10 @@ function saveFromModal() {
 
   const hasTarget = !isNoTarget;
   const target = hasTarget ? clampInt(targetInput.value, 100) : null;
-
   const description = (descInput.value || "").trim();
 
   if (!editingId) {
-    // Create new
+    // Create new item
     const newDhikr = {
       id: uuid(),
       name,
@@ -466,11 +477,10 @@ function saveFromModal() {
       description
     };
 
-    // If it's a free counter, replace existing free counter
+    // If user creates a free counter, replace the existing free counter (only one allowed)
     if (!hasTarget) {
       const idx = state.dhikrs.findIndex((d) => d.hasTarget === false);
       if (idx >= 0) {
-        // Keep counts if user wants, but here we replace as new free
         newDhikr.today = state.dhikrs[idx].today;
         newDhikr.total = state.dhikrs[idx].total;
         state.dhikrs[idx] = newDhikr;
@@ -483,30 +493,26 @@ function saveFromModal() {
 
     state.activeId = newDhikr.id;
   } else {
-    // Update existing
+    // Update existing item
     const d = state.dhikrs.find((x) => x.id === editingId);
     if (!d) return;
 
-    // Do not allow converting any item into a "second" free counter; free must be unique
+    // Prevent having 2 free counters; if converting to free, replace current free instead
     if (!hasTarget && d.hasTarget === true) {
-      // If user tries to make a normal dhikr free, we swap with the existing free counter
       const freeIdx = state.dhikrs.findIndex((x) => x.hasTarget === false);
       if (freeIdx >= 0) {
-        // Move this item to free slot by swapping content (keep ids stable)
         const free = state.dhikrs[freeIdx];
-
-        // Swap key fields
         free.name = name;
         free.description = description;
         free.step = step;
         free.hasTarget = false;
         free.target = null;
 
-        // Update the edited one (now will become a normal dhikr again)
+        // The edited one stays target-based
         d.hasTarget = true;
         d.target = clampInt(targetInput.value, 100);
+        d.step = step;
 
-        // Ensure active points to free if editing free
         state.activeId = free.id;
       }
     } else {
@@ -515,7 +521,6 @@ function saveFromModal() {
       d.step = step;
       d.hasTarget = hasTarget;
       d.target = target;
-
       if (!hasTarget) d.target = null;
     }
   }
@@ -531,7 +536,7 @@ function deleteDhikr(id) {
   const d = state.dhikrs.find((x) => x.id === id);
   if (!d) return;
 
-  // Prevent deleting the pinned free counter (always keep one)
+  // Do not allow deleting the pinned free counter
   if (!d.hasTarget) {
     alert("Serbest Sayaç silinemez. İstersen Düzenle ile adını/açıklamasını değiştirebilirsin.");
     return;
@@ -541,7 +546,7 @@ function deleteDhikr(id) {
 
   state.dhikrs = state.dhikrs.filter((x) => x.id !== id);
 
-  // If active deleted, fall back to free counter
+  // If active deleted, fallback to free
   if (state.activeId === id) {
     const free = state.dhikrs.find((x) => x.hasTarget === false);
     state.activeId = free ? free.id : state.dhikrs[0]?.id || null;
@@ -564,14 +569,24 @@ noTargetInput.addEventListener("change", () => {
 });
 
 /* =========================
-   Event bindings
+   Events
 ========================= */
 openAddBtn.addEventListener("click", openAdd);
 backBtn.addEventListener("click", () => switchView("menu"));
 
-tapBtn.addEventListener("click", tap);
 undoBtn.addEventListener("click", undo);
-resetBtn.addEventListener("click", resetToday);
+resetBtn.addEventListener("click", resetToday));
+
+// Tap by clicking the ring (main interaction)
+ringTap.addEventListener("click", tap);
+
+// Also allow Enter/Space on the ring for accessibility
+ringTap.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    tap();
+  }
+});
 
 closeModalBtn.addEventListener("click", closeModal);
 cancelBtn.addEventListener("click", closeModal);
@@ -583,7 +598,7 @@ modal.addEventListener("click", (e) => {
   if (e.target === modal) closeModal();
 });
 
-// Close modal with ESC key
+// Close modal with ESC
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !modal.classList.contains("hidden")) {
     closeModal();
