@@ -194,30 +194,36 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   switchToMenu();
 });
 
-const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=2';
+// Namaz vakitleri kodu başlıyor:
+(function() {
+  // Asıl API adresi CORS problemi çıkartırsa bunu ./namaz_test.json ile değiş!  
+  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=2'; 
+  // const API_URL = './namaz_test.json';   // Yedek/test için kullanabilirsin
 
-if (document.getElementById('namazSaatleriKutusu')) {
-  fetch(API_URL)
-    .then(res => {
-      if (!res.ok) throw new Error('API response not OK');
-      return res.json();
-    })
-    .then(veri => {
-      console.log('API VERİSİ:', veri);
-      if (!veri || !veri.data || !veri.data.timings) throw new Error('Beklenen veri bulunamadı');
-
-      const t = veri.data.timings;
-      document.getElementById('imsak').textContent = t.Fajr || '-';
-      document.getElementById('gunes').textContent = t.Sunrise || '-';
-      document.getElementById('ogle').textContent = t.Dhuhr || '-';
-      document.getElementById('ikindi').textContent = t.Asr || '-';
-      document.getElementById('aksam').textContent = t.Maghrib || '-';
-      document.getElementById('yatsi').textContent = t.Isha || '-';
-    })
-    .catch((e) => {
-      console.error('NAMAZ API HATASI:', e);
-      ['imsak','gunes','ogle','ikindi','aksam','yatsi'].forEach(id =>
-        document.getElementById(id).textContent = 'Hata'
-      );
-    });
-}
+  // Kutunun sayfada olup olmadığını kontrol et
+  if (document.getElementById('namazSaatleriKutusu')) {
+    fetch(API_URL)
+      .then(res => {
+        if (!res.ok) throw new Error('API response not OK');
+        return res.json();
+      })
+      .then(veri => {
+        // KONSOLA cevabı yaz, hata anında inceleyebilirsin
+        console.log('API VERİSİ:', veri);
+        const t = veri?.data?.timings;
+        if (!t) throw new Error('Beklenen veri bulunamadı');
+        document.getElementById('imsak').textContent = t.Fajr || '-';
+        document.getElementById('gunes').textContent = t.Sunrise || '-';
+        document.getElementById('ogle').textContent = t.Dhuhr || '-';
+        document.getElementById('ikindi').textContent = t.Asr || '-';
+        document.getElementById('aksam').textContent = t.Maghrib || '-';
+        document.getElementById('yatsi').textContent = t.Isha || '-';
+      })
+      .catch((e) => {
+        console.error('NAMAZ API HATASI:', e);
+        ['imsak','gunes','ogle','ikindi','aksam','yatsi'].forEach(id =>
+          document.getElementById(id).textContent = 'Hata'
+        );
+      });
+  }
+})();
