@@ -194,7 +194,7 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   switchToMenu();
 });
 
-const API_URL = 'https://ezanvakti.herokuapp.com/vakitler?ilce=Leek'; // 
+const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=2';
 
 if (document.getElementById('namazSaatleriKutusu')) {
   fetch(API_URL)
