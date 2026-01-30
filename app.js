@@ -193,3 +193,24 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   renderMenu();
   switchToMenu();
 });
+
+const API_URL = 'https://ezanvakti.herokuapp.com/vakitler?ilce=Leek'; // 
+
+if (document.getElementById('namazSaatleriKutusu')) {
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(veriler => {
+      const bugun = veriler[0];
+      document.getElementById('imsak').textContent = bugun?.Imsak || '-';
+      document.getElementById('gunes').textContent = bugun?.Gunes || '-';
+      document.getElementById('ogle').textContent = bugun?.Ogle || '-';
+      document.getElementById('ikindi').textContent = bugun?.Ikindi || '-';
+      document.getElementById('aksam').textContent = bugun?.Aksam || '-';
+      document.getElementById('yatsi').textContent = bugun?.Yatsi || '-';
+    })
+    .catch(() => {
+      ['imsak','gunes','ogle','ikindi','aksam','yatsi'].forEach(id =>
+        document.getElementById(id).textContent = 'Hata'
+      );
+    });
+}
