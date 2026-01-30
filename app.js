@@ -206,7 +206,6 @@ function addOrSubtractMinutes(timeStr, minuteOffset) {
 }
 
 (function() {
-  // Leek, Netherlands, with method=13 (Diyanet) - Note: Only official for Turkish cities!
   const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=13';
   // For local JSON testing if you have CORS issues:
   // const API_URL = './namaz_test.json'; 
