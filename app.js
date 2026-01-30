@@ -197,7 +197,7 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
 // Namaz vakitleri kodu başlıyor:
 (function() {
   // Asıl API adresi CORS problemi çıkartırsa bunu ./namaz_test.json ile değiş!  
-  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=2'; 
+  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=13'; 
   // const API_URL = './namaz_test.json';   // Yedek/test için kullanabilirsin
 
   // Kutunun sayfada olup olmadığını kontrol et
