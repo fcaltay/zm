@@ -194,13 +194,23 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   switchToMenu();
 });
 
-// Namaz vakitleri kodu başlıyor:
-(function() {
-  // Asıl API adresi CORS problemi çıkartırsa bunu ./namaz_test.json ile değiş!  
-  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=13'; 
-  // const API_URL = './namaz_test.json';   // Yedek/test için kullanabilirsin
+// Helper: Add or subtract minutes from a "HH:mm" formatted string
+function addOrSubtractMinutes(timeStr, minuteOffset) {
+  if (!timeStr) return '-';
+  const [hour, minute] = timeStr.split(':').map(Number);
+  const date = new Date(2000, 0, 1, hour, minute);
+  date.setMinutes(date.getMinutes() + minuteOffset);
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+}
 
-  // Kutunun sayfada olup olmadığını kontrol et
+(function() {
+  // Leek, Netherlands, with method=13 (Diyanet) - Note: Only official for Turkish cities!
+  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=13';
+  // For local JSON testing if you have CORS issues:
+  // const API_URL = './namaz_test.json'; 
+
   if (document.getElementById('namazSaatleriKutusu')) {
     fetch(API_URL)
       .then(res => {
@@ -208,16 +218,15 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
         return res.json();
       })
       .then(veri => {
-        // KONSOLA cevabı yaz, hata anında inceleyebilirsin
         console.log('API VERİSİ:', veri);
         const t = veri?.data?.timings;
-        if (!t) throw new Error('Beklenen veri bulunamadı');
-        document.getElementById('imsak').textContent = t.Fajr || '-';
-        document.getElementById('gunes').textContent = t.Sunrise || '-';
-        document.getElementById('ogle').textContent = t.Dhuhr || '-';
-        document.getElementById('ikindi').textContent = t.Asr || '-';
-        document.getElementById('aksam').textContent = t.Maghrib || '-';
-        document.getElementById('yatsi').textContent = t.Isha || '-';
+        if (!t) throw new Error('Expected data not found');
+        document.getElementById('imsak').textContent  = t.Fajr    || '-';
+        document.getElementById('gunes').textContent  = t.Sunrise || '-';
+        document.getElementById('ogle').textContent   = t.Dhuhr   ? addOrSubtractMinutes(t.Dhuhr, 1)    : '-';
+        document.getElementById('ikindi').textContent = t.Asr     ? addOrSubtractMinutes(t.Asr, 1)      : '-';
+        document.getElementById('aksam').textContent  = t.Maghrib ? addOrSubtractMinutes(t.Maghrib, -3) : '-';
+        document.getElementById('yatsi').textContent  = t.Isha    ? addOrSubtractMinutes(t.Isha, -8)    : '-';
       })
       .catch((e) => {
         console.error('NAMAZ API HATASI:', e);
