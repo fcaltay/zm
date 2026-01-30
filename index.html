@@ -17,49 +17,50 @@
 
   <header class="header">
     <div>
-      <h1>Zikir Matik</h1>
-      <p class="subtitle">Zikirlerinizi kolayca takip edin</p>
+      <h1 style="text-align:center">Zikir Matik</h1>
+      <p class="subtitle" style="text-align:center">Zikirlerinizi kolayca takip edin</p>
     </div>
   </header>
   
   <!-- MENU -->
   <section id="menuView" class="view">
-    <div class="menuGrid2">
+  <div class="menuGrid2">
 
-      <div class="leftCol">
-        <div class="colTitleRow">
-          <div class="colTitle"></div>
-        </div>
-        <div id="freeSlot"></div>
-
-        <!-- RESET DATA BUTTON -->
-        <div class="leftBottom">
-          <button id="resetDataBtn" class="btn danger full">🧹 Verileri Sıfırla</button>
-          <div class="hint">Bu işlem tüm sayaçları ve kayıtlı verileri siler!!!</div>
-        </div>
+    <div class="leftCol">
+      <div class="colTitleRow">
+        <div class="colTitle"></div>
       </div>
+      <div id="freeSlot"></div>
 
-      <div class="rightCol">
-        <div class="rightTop">
-          <div class="colTitle">Diğer Zikirler</div>
-        </div>
-        <div id="dhikrList" class="cards"></div>
+      <!-- RESET DATA BUTTON -->
+      <div class="leftBottom">
+        <button id="resetDataBtn" class="btn danger full">🧹 Verileri Sıfırla</button>
+        <div class="hint">Bu işlem tüm sayaçları ve kayıtlı verileri siler!!!</div>
       </div>
-
-      <section id="namazSaatleriKutusu" class="panel" style="margin: 20px auto;max-width:350px;">
-  <h2 style="text-align:center">Leek Namaz Saatleri</h2>
-  <table style="width:100%">
-    <tr><th>İmsak</th><td id="imsak"></td></tr>
-    <tr><th>Güneş</th><td id="gunes"></td></tr>
-    <tr><th>Öğle</th><td id="ogle"></td></tr>
-    <tr><th>İkindi</th><td id="ikindi"></td></tr>
-    <tr><th>Akşam (İftar)</th><td id="aksam"></td></tr>
-    <tr><th>Yatsı</th><td id="yatsi"></td></tr>
-  </table>
-</section>
-
     </div>
-  </section>
+
+    <div class="rightCol">
+      <div class="rightTop">
+        <div class="colTitle">Diğer Zikirler</div>
+      </div>
+      <div id="dhikrList" class="cards"></div>
+
+      <section id="namazSaatleriKutusu" class="panel" style="margin:24px 0 0 0;max-width:350px;">
+        <h2 style="text-align:center">Leek Namaz Saatleri</h2>
+        <table style="width:100%">
+          <tr><th>İmsak</th><td id="imsak"></td></tr>
+          <tr><th>Güneş</th><td id="gunes"></td></tr>
+          <tr><th>Öğle</th><td id="ogle"></td></tr>
+          <tr><th>İkindi</th><td id="ikindi"></td></tr>
+          <tr><th>Akşam (İftar)</th><td id="aksam"></td></tr>
+          <tr><th>Yatsı</th><td id="yatsi"></td></tr>
+        </table>
+      </section>
+      <!-- Namaz kutusu bitti -->
+    </div>
+
+  </div>
+</section>
 
   <!-- COUNTER -->
   <section id="counterView" class="view hidden">
