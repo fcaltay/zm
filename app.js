@@ -223,8 +223,8 @@ function addOrSubtractMinutes(timeStr, minuteOffset) {
         if (!t) throw new Error('Expected data not found');
         document.getElementById('imsak').textContent  = t.Fajr    || '-';
         document.getElementById('gunes').textContent  = t.Sunrise || '-';
-        document.getElementById('ogle').textContent   = t.Dhuhr   ? addOrSubtractMinutes(t.Dhuhr, 1)    : '-';
-        document.getElementById('ikindi').textContent = t.Asr     ? addOrSubtractMinutes(t.Asr, 1)      : '-';
+        document.getElementById('ogle').textContent   = t.Dhuhr   ? addOrSubtractMinutes(t.Dhuhr, -1)    : '-';
+        document.getElementById('ikindi').textContent = t.Asr     ? addOrSubtractMinutes(t.Asr, -1)      : '-';
         document.getElementById('aksam').textContent  = t.Maghrib ? addOrSubtractMinutes(t.Maghrib, -3) : '-';
         document.getElementById('yatsi').textContent  = t.Isha    ? addOrSubtractMinutes(t.Isha, -8)    : '-';
       })
