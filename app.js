@@ -198,17 +198,24 @@ const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Neth
 
 if (document.getElementById('namazSaatleriKutusu')) {
   fetch(API_URL)
-    .then(res => res.json())
-    .then(veriler => {
-      const bugun = veriler[0];
-      document.getElementById('imsak').textContent = bugun?.Imsak || '-';
-      document.getElementById('gunes').textContent = bugun?.Gunes || '-';
-      document.getElementById('ogle').textContent = bugun?.Ogle || '-';
-      document.getElementById('ikindi').textContent = bugun?.Ikindi || '-';
-      document.getElementById('aksam').textContent = bugun?.Aksam || '-';
-      document.getElementById('yatsi').textContent = bugun?.Yatsi || '-';
+    .then(res => {
+      if (!res.ok) throw new Error('API response not OK');
+      return res.json();
     })
-    .catch(() => {
+    .then(veri => {
+      console.log('API VERİSİ:', veri);
+      if (!veri || !veri.data || !veri.data.timings) throw new Error('Beklenen veri bulunamadı');
+
+      const t = veri.data.timings;
+      document.getElementById('imsak').textContent = t.Fajr || '-';
+      document.getElementById('gunes').textContent = t.Sunrise || '-';
+      document.getElementById('ogle').textContent = t.Dhuhr || '-';
+      document.getElementById('ikindi').textContent = t.Asr || '-';
+      document.getElementById('aksam').textContent = t.Maghrib || '-';
+      document.getElementById('yatsi').textContent = t.Isha || '-';
+    })
+    .catch((e) => {
+      console.error('NAMAZ API HATASI:', e);
       ['imsak','gunes','ogle','ikindi','aksam','yatsi'].forEach(id =>
         document.getElementById(id).textContent = 'Hata'
       );
