@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // -------- Storage helpers --------
+
   const KEY = "zikir-matik-state-v1";
 
   function load() {
@@ -15,38 +15,183 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(KEY, JSON.stringify(state));
   }
 
-  // -------- Default data --------
   const DEFAULT_STATE = {
     dhikrs: [
-      { id: "tefriciye", name: "Salât-ı Tefriciye (Nâriye)", target: 11, today: 0, total: 0,
-        desc:
-`🕌 Arapça:
-اللَّهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تُنْحَلُّ بِهِ الْعُقَدُ وَتَنْفَرِجُ بِهِ الْكُرَبُ وَتُقْضَى بِهِ الْحَوَائِجُ وَتُنَالُ بِهِ الرَّغَائِبُ وَحُسْنُ الْخَوَاتِيمِ وَيُسْتَسْقَى الْغَمَامُ بِوَجْهِهِ الْكَرِيمِ
-وَعَلَى آلِهِ وَصَحْبِهِ فِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ.
 
+      {
+        id: "tefriciye",
+        name: "Salât-ı Tefriciye (Nâriye)",
+        target: 11,
+        today: 0,
+        total: 0,
+        desc: `
 🔤 Okunuş:
-Allâhumme salli salâten kâmileten ve sellim selâmen tâmmen alâ Seyyidinâ Muhammedinillezî tenhallü bihil ukadü ve tenfericu bihil-kürebü ve tukdâ bihil-havâicu ve tünâlü bihir-reğâibü ve hüsnül-havâtimi ve yustaskal ğamâmu bivechihil Kerîm ve alâ âlihî ve sahbihi fî külli lemhatin ve nefesin bi adedi külli ma’lûmin lek
+Allâhumme salli salâten kâmileten ve sellim selâmen tâmmen alâ Seyyidinâ Muhammedinillezî tenhallü bihil ukadü ve tenfericu bihil kürebü ve tukdâ bihil havâicu ve tünâlü bihir reğâibü ve hüsnül havâtimi ve yustaskal ğamâmu bi vechihil kerîm ve alâ âlihî ve sahbihî fî külli lemhatin ve nefesin bi adedi külli ma’lûmin lek.
+`
+      },
 
-ℹ️ Kısa bilgi:
-Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle okunur.` },
-      
-      { id: "free", name: "Serbest Sayaç", free: true, target: null, today: 0, total: 0,
-        desc: "Hedefsiz sayaç. İstediğin kadar say." },
+      {
+        id: "free",
+        name: "Serbest Sayaç",
+        free: true,
+        target: null,
+        today: 0,
+        total: 0,
+        desc: "Hedefsiz sayaç. İstediğin kadar say."
+      },
 
-      { id: "latif", name: "Ya Latif (c.c.)", target: 100, today: 0, total: 0,
-        desc: "Rızık bolluğu, ferahlık, huzur için okunur." },
+      {
+        id: "ayetel_kursi",
+        name: "Ayetel Kürsi",
+        target: 3,
+        today: 0,
+        total: 0,
+        desc: `
+🔤 Okunuş:
 
-      { id: "safi", name: "Ya Şâfi (c.c.)", target: 100, today: 0, total: 0,
-        desc: "Şifa için okunur." },
+Bismillâhirrahmânirrahîm.
+
+Allâhu lâ ilâhe illâ huvel hayyul kayyûm.
+Lâ te’huzühû sinetün velâ nevm.
+Lehû mâ fis semâvâti ve mâ fil ard.
+Men zellezî yeşfeu indehû illâ bi iznih.
+Ya’lemu mâ beyne eydîhim ve mâ halfehum.
+Ve lâ yuhîtûne bi şey’in min ilmihî illâ bi mâ şâe.
+Vesia kürsiyyühüs semâvâti vel ard.
+Ve lâ yeûdühû hıfzuhumâ.
+Ve huvel aliyyül azîm.
+`
+      },
+
+      {
+        id: "fetih",
+        name: "Fetih Suresi",
+        target: 1,
+        today: 0,
+        total: 0,
+        desc: `
+🔤 Okunuş:
+
+Bismillâhirrahmanirrahim.
+
+1. İnnâ fetahnâ leke fethan mubînâ(mubînen).
+
+2. Li yagfira lekallâhu mâ tekaddeme min zenbike ve mâ teahhara ve yutimme ni’metehu aleyke ve yehdiyeke sırâtan mustekîmâ(mustekîmen).
+
+3. Ve yansurakallâhu nasran azîzâ(azîzen).
+
+4. Huvellezî enzeles sekînete fî kulûbil mu’minîne li yezdâdû îmânen mea îmânihim, ve lillâhi cunûdus semâvâti vel ard(ardı), ve kânallâhu alîmen hakîmâ(hakîmen).
+
+5. Li yudhilel mu’minîne vel mu’minâti cennâtin tecrî min tahtihâl enhâru hâlidîne fîhâ ve yukeffira anhum seyyiâtihim, ve kâne zâlike indallâhi fevzen azîmâ(azîmen).
+
+6. Ve yuazzibel munâfikîne vel munâfikâti vel muşrikîne vel muşrikâtiz zânnîne billâhi zannes sev’i aleyhim dâiratus sev’i, ve gadiballâhu aleyhim ve leanehum ve eadde lehum cehennem(cehenneme), ve sâet masîrâ(masîren).
+
+7. Ve lillâhi cunûdus semâvâti vel ard(ardı), ve kânallâhu azîzen hakîmâ(hakîmen).
+
+8. İnnâ erselnâke şâhiden ve mubeşşiran ve nezîrâ(nezîren).
+
+9. Li tu’minû billâhi ve resûlihî ve tuazzirûhu ve tuvakkırûhu, ve tusebbihûhu bukraten ve asîlâ(asîlen).
+
+10. İnnellezîne yubâyiûneke innemâ yubâyiûnallâh(yubâyiûnallâhe), yedullâhi fevka eydîhim, fe men nekese fe innemâ yenkusu alâ nefsihî, ve men evfâ bi mâ âhede aleyhullâhe fe se yu’tîhi ecran azîmâ(azîmen).
+
+11. Se yekûlu lekel muhallefûne minel a’râbi şegaletnâ emvâlunâ ve ehlûnâ festagfir lenâ, yekûlûne bi elsinetihim mâ leyse fî kulûbihim, kul fe men yemliku lekum minallâhi şey’en in erâde bikum darran ev erâde bikum nef’â(nef’en), bel kânallâhu bi mâ ta’melûne habîrâ(habîran).
+
+12. Bel zanentum en len yenkaliber resûlu vel mu’minûne ilâ ehlîhim ebeden ve zuyyine zâlike fî kulûbikum ve zanentum zannes sev’i ve kuntum kavmen bûrâ(bûran).
+
+13. Ve men lem yu’min billâhi ve resûlihî fe innâ a’tednâ lil kâfirîne saîrâ(saîran).
+
+14. Ve lillâhi mulkus semâvâti vel ard(ardı), yagfiru li men yeşâu ve yuazzibu men yeşâu, ve kânallahu gafûran rahîmâ(rahîmen).
+
+15. Se yekûlul muhallefûne izântalaktum ilâ megânime li te’huzûhâ zerûnâ nettebi’kum, yurîdûne en yubeddilû kelâmallâh(kelâmallâhi), kul len tettebiûnâ kezâlikum kâlallâhu min kablu, fe se yekûlûne bel tahsudûnenâ, bel kânû lâ yefkahûne illâ kalîlâ(kalîlen).
+
+16. Kul lil muhallefîne minel a’râbi se tud’avne ilâ kavmin ulî be’sin şedîdin tukâtilûnehum ev yuslimûn(yuslimûne), fe in tutîû yu’tikumullâhu ecran hasenâ(hasenen), ve in tetevellev kemâ tevelleytum min kablu yuazzibkum azâben elîmâ(elîmen).
+
+17. Leyse alâl a’mâ haracun ve lâ alâl a’raci haracun ve lâ alâl marîdı haracun, ve men yutııllahe ve resûlehu yudhılhu cennâtin tecrî min tahtihâl enhâru, ve men yetevelle yuazzibhu azâben elîmâ(elîmen).
+
+18. Lekad radiyallâhu anil mu’minîne iz yubâyiûneke tahteş şecerati fe alime mâ fî kulûbihim fe enzeles sekînete aleyhim ve esâbehum fethan karîbâ(karîben).
+
+19. Ve megânime kesîraten ye’huzûnehâ, ve kânallâhu azîzen hakîmâ(hakîmen).
+
+20. Vaadekumullâhu megânime kesîraten te’huzûnehâ fe accele lekum hâzihî ve keffe eydiyen nâsi ankum, ve li tekûne âyeten lil mu’minîne ve yehdiyekum sırâtan mustakîmâ(mustakîmen).
+
+21. Ve uhrâ lem takdirû aleyhâ kad ehâtallâhu bihâ, ve kânallâhu alâ kulli şey’in kadîrâ(kadîran).
+
+22. Ve lev kâtelekumullezîne keferû le vellevûl edbâra summe lâ yecidûne velîyyen ve lâ nasîrâ( nasîran).
+
+23. Sunnetallâhilletî kad halet min kablu, ve len tecide li sunnetillâhi tebdîlâ(tebdîlen).
+
+24. Ve huvellezî keffe eydiyehum ankum ve eydiyekum anhum bi batni mekkete min ba’di en azferakum aleyhim ve kânallâhu bi mâ ta’melûne basîrâ(basîran).
+
+25. Humullezîne keferû ve saddûkum anil mescidil harâmi vel hedye ma’kûfen en yebluga mahıllehu, ve lev lâ ricâlun mu’minûne ve nisâun mu’minâtun lem ta’lemûhum en tetaûhum fe tusîbekum minhum maarratun bi gayri ilmin, li yudhılallâhu fî rahmetihî men yeşâu, lev tezeyyelû le azzebnâllezîne keferû minhum azâben elîmâ(elîmen).
+
+26. İz cealellezîne keferû fî kulûbihimul hamiyyete hamiyyetel câhiliyyeti fe enzelallâhu sekînetehu alâ resûlihî ve alel mu’minîne ve elzemehum kelimetet takvâ ve kânû e hakka bihâ ve ehlehâ ve kânallâhu bi kulli şey’in alîmâ(alîmen).
+
+27. Lekad sadakallâhu resûlehur ru’yâ bil hakkı, le tedhulunnel mescidel harâme inşâallâhu âminîne muhallikîne ruûsekum ve mukassırîne lâ tehâfûn(tehâfûne), fe alime mâ lem ta’lemû fe ceale min dûni zâlike fethan karîbâ(karîben).
+
+28. Huvellezî ersele resûlehu bil hudâ ve dînil hakkı li yuzhirahu alâd dîni kullihî, ve kefâ billâhi şehîdâ(şehîden).
+
+29. Muhammedun resûlullâh(resûlullâhi), vellezîne meahû eşiddâu alâl kuffâri ruhamâu beynehum terâhum rukkean succeden yebtegûne fadlen minallâhi ve rıdvânen sîmâhum fî vucûhihim min eseris sucûd(sucûdi), zâlike meseluhum fît tevrât(tevrâti), ve meseluhum fîl incîl(incîli), ke zer’in ahrace şat’ehu fe âzerehu festagleza festevâ alâ sûkıhî yu’cibuz zurrâa, li yagîza bihimul kuffâr(kuffâra), vaadallâhullezîne âmenû ve amilûs sâlihâti minhum magfiraten ve ecren azîmâ(azîmen).
+`
+      },
+
+      {
+        id: "nazar_duasi",
+        name: "Nazar Duası",
+        target: 7,
+        today: 0,
+        total: 0,
+        desc: `
+🔤 Okunuş:
+
+Eûzü bi kelimâtillâhi’t-tâmmeti min kulli şeytânin ve hâmmeh
+ve min kulli aynin lâmmeh.
+`
+      },
+
+      {
+        id: "ihlas_felak_nas",
+        name: "İhlas + Felak + Nas",
+        target: 3,
+        today: 0,
+        total: 0,
+        desc: `
+🔤 Okunuş:
+
+Bismillâhirrahmânirrahîm.
+
+Kul hüvallâhu ehad.
+Allâhü's-samed.
+Lem yelid ve lem yûled.
+Ve lem yekun lehû kufuven ehad.
+
+Bismillâhirrahmânirrahîm.
+
+Kul eûzü bi rabbil felak.
+Min şerri mâ halak.
+Ve min şerri ğâsikın izâ vekab.
+Ve min şerri’n-neffâsâti fil ukad.
+Ve min şerri hâsidin izâ hased.
+
+Bismillâhirrahmânirrahîm.
+
+Kul eûzü bi rabbin nâs.
+Melikin nâs.
+İlâhin nâs.
+Min şerril vesvâsil hannâs.
+Ellezî yuvesvisu fî sudûrin nâs.
+Minel cinneti ven nâs.
+`
+      }
+
     ],
     activeId: "free"
   };
 
-  // -------- Load state (or init) --------
   let state = load();
-  if (!state || !Array.isArray(state.dhikrs)) state = structuredClone(DEFAULT_STATE);
+  if (!state || !Array.isArray(state.dhikrs)) {
+    state = structuredClone(DEFAULT_STATE);
+  }
 
-  // -------- DOM --------
   const freeSlot = document.getElementById("freeSlot");
   const dhikrList = document.getElementById("dhikrList");
   const menuView = document.getElementById("menuView");
@@ -67,7 +212,6 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   const resetBtn = document.getElementById("resetBtn");
   const resetDataBtn = document.getElementById("resetDataBtn");
 
-  // -------- State helpers --------
   function getActive() {
     return state.dhikrs.find(d => d.id === state.activeId) || state.dhikrs[0];
   }
@@ -85,7 +229,6 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
     renderCounter();
   }
 
-  // -------- Render --------
   function renderMenu() {
     freeSlot.innerHTML = "";
     dhikrList.innerHTML = "";
@@ -93,10 +236,15 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
     state.dhikrs.forEach((d) => {
       const card = document.createElement("div");
       card.className = "card";
-      const todayPart = d.target ? `${d.today} / ${d.target}` : `${d.today} / ∞`;
 
-      // show only short preview in menu
-      const preview = (d.desc || "").split("\n").slice(0, 2).join("\n");
+      const todayPart = d.target
+        ? `${d.today} / ${d.target}`
+        : `${d.today} / ∞`;
+
+      const preview = (d.desc || "")
+        .split("\n")
+        .slice(0, 2)
+        .join("\n");
 
       card.innerHTML = `
         <div class="title">${d.name}</div>
@@ -113,31 +261,30 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
 
   function renderCounter() {
     const a = getActive();
+
     activeNameEl.textContent = a.name;
 
     if (a.target) {
       activeSubEl.textContent = `Hedef: ${a.target}`;
       targetTitleEl.textContent = "Hedef";
-      targetLabelEl.textContent = String(a.target);
+      targetLabelEl.textContent = a.target;
     } else {
       activeSubEl.textContent = "Serbest sayaç";
       targetTitleEl.textContent = "Mod";
       targetLabelEl.textContent = "∞";
     }
 
-    countEl.textContent = String(a.today);
-    todayLabelEl.textContent = String(a.today);
-    totalLabelEl.textContent = String(a.total);
+    countEl.textContent = a.today;
+    todayLabelEl.textContent = a.today;
+    totalLabelEl.textContent = a.total;
 
-    // full text on counter screen
     descBoxEl.textContent = a.desc || "";
   }
 
-  // -------- Actions --------
   function tap() {
     const a = getActive();
-    a.today += 1;
-    a.total += 1;
+    a.today++;
+    a.total++;
     save(state);
     renderCounter();
     renderMenu();
@@ -162,7 +309,7 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
   }
 
   function resetAllData() {
-    if (!confirm("Tüm veriler silinsin mi? (Sayaçlar, toplamlar, hepsi)")) return;
+    if (!confirm("Tüm veriler silinsin mi?")) return;
     localStorage.removeItem(KEY);
     state = structuredClone(DEFAULT_STATE);
     save(state);
@@ -170,8 +317,8 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
     switchToMenu();
   }
 
-  // -------- Events --------
   ringTap.addEventListener("click", tap);
+
   ringTap.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -181,6 +328,7 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
 
   undoBtn.addEventListener("click", undo);
   resetBtn.addEventListener("click", resetToday);
+
   backBtn.addEventListener("click", () => {
     switchToMenu();
     renderMenu();
@@ -188,50 +336,8 @@ Sıkıntıların açılması, işlerin kolaylaşması ve ferahlık niyetiyle oku
 
   resetDataBtn.addEventListener("click", resetAllData);
 
-  // -------- Init --------
   save(state);
   renderMenu();
   switchToMenu();
+
 });
-
-// Helper: Add or subtract minutes from a "HH:mm" formatted string
-function addOrSubtractMinutes(timeStr, minuteOffset) {
-  if (!timeStr) return '-';
-  const [hour, minute] = timeStr.split(':').map(Number);
-  const date = new Date(2000, 0, 1, hour, minute);
-  date.setMinutes(date.getMinutes() + minuteOffset);
-  const h = String(date.getHours()).padStart(2, '0');
-  const m = String(date.getMinutes()).padStart(2, '0');
-  return `${h}:${m}`;
-}
-
-(function() {
-  const API_URL = 'https://api.aladhan.com/v1/timingsByCity?city=Leek&country=Netherlands&method=13';
-  // For local JSON testing if you have CORS issues:
-  // const API_URL = './namaz_test.json'; 
-
-  if (document.getElementById('namazSaatleriKutusu')) {
-    fetch(API_URL)
-      .then(res => {
-        if (!res.ok) throw new Error('API response not OK');
-        return res.json();
-      })
-      .then(veri => {
-        console.log('API VERİSİ:', veri);
-        const t = veri?.data?.timings;
-        if (!t) throw new Error('Expected data not found');
-        document.getElementById('imsak').textContent  = t.Fajr    || '-';
-        document.getElementById('gunes').textContent  = t.Sunrise || '-';
-        document.getElementById('ogle').textContent   = t.Dhuhr   ? addOrSubtractMinutes(t.Dhuhr, -1)    : '-';
-        document.getElementById('ikindi').textContent = t.Asr     ? addOrSubtractMinutes(t.Asr, -1)      : '-';
-        document.getElementById('aksam').textContent  = t.Maghrib ? addOrSubtractMinutes(t.Maghrib, -3) : '-';
-        document.getElementById('yatsi').textContent  = t.Isha    ? addOrSubtractMinutes(t.Isha, -8)    : '-';
-      })
-      .catch((e) => {
-        console.error('NAMAZ API HATASI:', e);
-        ['imsak','gunes','ogle','ikindi','aksam','yatsi'].forEach(id =>
-          document.getElementById(id).textContent = 'Hata'
-        );
-      });
-  }
-})();
